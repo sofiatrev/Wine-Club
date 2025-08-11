@@ -2,6 +2,10 @@
 
 This project is a web application that allows users to log and rate wines they have tried. Wines are stored in a database and can be retrieved for viewing and editing.
 
+- `/frontend` — React app (Vite)
+- `/backend` — Express API server
+- `/database` — Azure SQL Database
+
 ## Folder Structure
 
 ```text
@@ -36,7 +40,12 @@ Wine-Club/
 
 ## Libraries and Frameworks
 
-(Describe backend (e.g., Express/Mongoose) and frontend (e.g., React + Vite) here.)
+- Frontend: React + Vite
+- Backend: Node.js + Express
+- Database: Azure SQL Database
+- Hosting: Azure App Services
+- Authentication: TBD (Auth0 / Custom JWT)
+- Image Storage: Azure Blob Storage
 
 ## Coding Standards
 
