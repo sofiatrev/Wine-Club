@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import WineForm from './components/WineForm';
-import WineList from './components/WineList'; // Import the WineList component
+import WineList from './components/WineList';
 
 const App = () => {
+  const [refresh, setRefresh] = useState(0);
   return (
     <div>
       <h1>Wine Club</h1>
-      <WineForm />
-      <WineList /> {/* Display the list of wines */}
+      <WineForm onAdded={() => setRefresh(r => r + 1)} />
+      <WineList refreshSignal={refresh} />
     </div>
   );
 };

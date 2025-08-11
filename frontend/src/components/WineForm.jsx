@@ -1,110 +1,81 @@
 // src/components/WineForm.jsx
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const WineForm = () => {
-  const [formData, setFormData] = useState({
+const allowedTypes = ['Red', 'White', 'Rose', 'Sparkling'];
+
+const WineForm = ({ onAdded }) => {
+  const [form, setForm] = useState({
     name: '',
+    country: '',
+    year: '',
     type: '',
-    vintage: '',
     rating: '',
-    notes: '',
-    region: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+    setForm(f => ({ ...f, [name]: value }));
+  }
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // Logic to send the form data to the backend
-    console.log('Wine data submitted:', formData);
-    // Clear the form after submission
-    setFormData({
-      name: '',
-      type: '',
-      vintage: '',
-      rating: '',
-      notes: '',
-      region: '',
-    });
-  };
+    setError('');
+    const { name, country, year, type, rating } = form;
+    if (!name || !country || !year || !type || rating === '') {
+      setError('All fields required');
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await axios.post('http://localhost:5000/wines', {
+        name,
+        country,
+        year: Number(year),
+        type,
+        rating: Number(rating),
+      });
+      setForm({ name: '', country: '', year: '', type: '', rating: '' });
+      onAdded && onAdded(res.data);
+    } catch (err) {
+      setError(err.response?.data?.errors?.join(', ') || 'Failed to save');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit} className="wine-form">
       <h2>Log a Wine</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <label>
-        Wine Name:
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
+        Name
+        <input name="name" value={form.name} onChange={handleChange} required />
       </label>
       <label>
-        Wine Type:
-        <select
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Type</option>
-          <option value="Red">Red</option>
-          <option value="White">White</option>
-          <option value="Rosé">Rosé</option>
-          <option value="Sparkling">Sparkling</option>
-          <option value="Dessert">Dessert</option>
+        Country
+        <input name="country" value={form.country} onChange={handleChange} required />
+      </label>
+      <label>
+        Year
+        <input type="number" name="year" value={form.year} onChange={handleChange} min="1900" max={new Date().getFullYear()} required />
+      </label>
+      <label>
+        Type
+        <select name="type" value={form.type} onChange={handleChange} required>
+          <option value="">Select</option>
+          {allowedTypes.map(t => (
+            <option key={t} value={t}>{t}</option>
+          ))}
         </select>
       </label>
       <label>
-        Vintage (Year):
-        <input
-          type="number"
-          name="vintage"
-          value={formData.vintage}
-          onChange={handleChange}
-          required
-        />
+        Rating (1-10)
+        <input type="number" name="rating" value={form.rating} onChange={handleChange} min="1" max="10" required />
       </label>
-      <label>
-        Rating (1-10):
-        <input
-          type="number"
-          name="rating"
-          value={formData.rating}
-          onChange={handleChange}
-          required
-          min="1"
-          max="10"
-        />
-      </label>
-      <label>
-        Tasting Notes:
-        <textarea
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          required
-        />
-      </label>
-      <label>
-        Wine Region:
-        <input
-          type="text"
-          name="region"
-          value={formData.region}
-          onChange={handleChange}
-          required
-        />
-      </label>
-      <button type="submit">Log Wine</button>
+      <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Add Wine'}</button>
     </form>
   );
 };

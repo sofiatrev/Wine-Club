@@ -50,6 +50,7 @@ Wine-Club/
 ## Coding Standards
 
 (Define linting rules, naming conventions, and commit message style.)
+- Commit Message Style: Use conventional commits format (e.g., `feat: add new feature`, `fix: resolve bug`).
 
 ## UI guidelines
 

@@ -6,78 +6,84 @@ dotenv.config();
 
 const app = express();
 
-// Middleware to parse JSON data in requests
-app.use(express.json());  // This should come before your routes
+// Middleware
+app.use(express.json());
+app.use(cors());
 
-app.use(cors());  // You can keep CORS middleware after
-
-// Root endpoint to check if API is running
-app.get('/', (req, res) => {
-  res.send('Wine Club API is running 🍷');
+// Root health endpoint
+app.get('/', (_req, res) => {
+  res.send('Wine Club API is running \uD83C\uDF77');
 });
 
-// Dummy data to simulate a database
+// In‑memory store (MVP). Fields: id, name, country, year, type, rating (0-10)
 let wines = [
-  { id: 1, name: 'Chardonnay', winery: 'ABC Winery', year: 2021, rating: 4.5, notes: 'Fruity and smooth' },
-  { id: 2, name: 'Merlot', winery: 'XYZ Vineyards', year: 2019, rating: 4.0, notes: 'Rich and full-bodied' },
+  { id: 1, name: 'Chardonnay', country: 'France', year: 2021, type: 'White', rating: 8 },
+  { id: 2, name: 'Merlot', country: 'USA', year: 2019, type: 'Red', rating: 7 },
 ];
 
+// Helper validation
+function validateWine(payload) {
+  const errors = [];
+  const { name, country, year, type, rating } = payload;
+  const allowedTypes = ['Red', 'White', 'Rose', 'Sparkling'];
+  if (!name) errors.push('name required');
+  if (!country) errors.push('country required');
+  const currentYear = new Date().getFullYear();
+  if (year === undefined || year === null || Number.isNaN(Number(year))) errors.push('year required');
+  else if (year < 1900 || year > currentYear) errors.push('year out of range');
+  if (!type || !allowedTypes.includes(type)) errors.push('invalid type');
+  if (rating === undefined || rating === null || Number.isNaN(Number(rating))) errors.push('rating required');
+  else if (rating < 1 || rating > 10) errors.push('rating must be 1-10');
+  return errors;
+}
+
 // Routes
-// Get all wines
-app.get('/wines', (req, res) => {
+app.get('/wines', (_req, res) => {
   res.json(wines);
 });
 
-// Add a new wine
 app.post('/wines', (req, res) => {
-  const { name, winery, year, rating, notes } = req.body;
+  const errors = validateWine(req.body);
+  if (errors.length) return res.status(400).json({ errors });
+  const { name, country, year, type, rating } = req.body;
   const newWine = {
-    id: wines.length + 1,  // Simple ID generation
+    id: wines.length ? wines[wines.length - 1].id + 1 : 1,
     name,
-    winery,
-    year,
-    rating,
-    notes,
+    country,
+    year: Number(year),
+    type,
+    rating: Number(rating),
   };
   wines.push(newWine);
   res.status(201).json(newWine);
 });
 
-// Get a specific wine by ID
 app.get('/wines/:id', (req, res) => {
-  const wine = wines.find(wine => wine.id === parseInt(req.params.id));
-  if (!wine) return res.status(404).send('Wine not found');
+  const wine = wines.find(w => w.id === Number(req.params.id));
+  if (!wine) return res.status(404).json({ error: 'Not found' });
   res.json(wine);
 });
 
-// Update a wine
 app.put('/wines/:id', (req, res) => {
-  const wine = wines.find(wine => wine.id === parseInt(req.params.id));
-  if (!wine) return res.status(404).send('Wine not found');
-
-  const { name, winery, year, rating, notes } = req.body;
-  wine.name = name || wine.name;
-  wine.winery = winery || wine.winery;
-  wine.year = year || wine.year;
-  wine.rating = rating || wine.rating;
-  wine.notes = notes || wine.notes;
-
+  const wine = wines.find(w => w.id === Number(req.params.id));
+  if (!wine) return res.status(404).json({ error: 'Not found' });
+  const update = { ...wine, ...req.body };
+  const errors = validateWine(update);
+  if (errors.length) return res.status(400).json({ errors });
+  wine.name = update.name;
+  wine.country = update.country;
+  wine.year = Number(update.year);
+  wine.type = update.type;
+  wine.rating = Number(update.rating);
   res.json(wine);
 });
 
-// Delete a wine
 app.delete('/wines/:id', (req, res) => {
-  const wineIndex = wines.findIndex(wine => wine.id === parseInt(req.params.id));
-  if (wineIndex === -1) return res.status(404).send('Wine not found');
-
-  wines.splice(wineIndex, 1);  // Remove the wine from the array
-  res.status(204).send();  // No content
+  const idx = wines.findIndex(w => w.id === Number(req.params.id));
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  wines.splice(idx, 1);
+  res.status(204).send();
 });
 
-
-const PORT = process.env.PORT || 5000; // Default to 5000 if PORT is not found
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Backend is running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
