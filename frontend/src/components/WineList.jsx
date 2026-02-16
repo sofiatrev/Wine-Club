@@ -21,18 +21,41 @@ const WineList = ({ refreshSignal }) => {
   useEffect(() => { load(); }, [refreshSignal]);
 
   return (
-    <div>
-      <h2>All Wines</h2>
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <ul>
+    <div className="wine-list-container">
+      <h2 className="wine-list-title">Your Wine Collection</h2>
+      
+      {loading && <p className="loading-message">Loading your wines...</p>}
+      {error && <div className="error-message">{error}</div>}
+      
+      {!wines.length && !loading && (
+        <p className="empty-message">No wines logged yet. Add your first wine above!</p>
+      )}
+      
+      <div className="wine-grid">
         {wines.map(w => (
-          <li key={w.id}>
-            <strong>{w.name}</strong> ({w.year}) – {w.type} – {w.country} – Rating: {w.rating}
-          </li>
+          <div key={w.id} className="wine-card">
+            <div className="wine-name">{w.name}</div>
+            <div className="wine-details">
+              <div className="wine-detail">
+                <span>Year:</span>
+                <span>{w.year}</span>
+              </div>
+              <div className="wine-detail">
+                <span>Type:</span>
+                <span>{w.type}</span>
+              </div>
+              <div className="wine-detail">
+                <span>Country:</span>
+                <span>{w.country}</span>
+              </div>
+            </div>
+            <div className="wine-rating">
+              <span className="rating-label">Rating:</span>
+              <span className="rating-value">{w.rating}/10</span>
+            </div>
+          </div>
         ))}
-      </ul>
-      {!wines.length && !loading && <p>No wines logged yet.</p>}
+      </div>
     </div>
   );
 };

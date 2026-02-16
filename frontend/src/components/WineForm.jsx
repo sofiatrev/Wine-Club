@@ -48,34 +48,78 @@ const WineForm = ({ onAdded }) => {
 
   return (
     <form onSubmit={handleSubmit} className="wine-form">
-      <h2>Log a Wine</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <label>
-        Name
-        <input name="name" value={form.name} onChange={handleChange} required />
-      </label>
-      <label>
-        Country
-        <input name="country" value={form.country} onChange={handleChange} required />
-      </label>
-      <label>
-        Year
-        <input type="number" name="year" value={form.year} onChange={handleChange} min="1900" max={new Date().getFullYear()} required />
-      </label>
-      <label>
-        Type
-        <select name="type" value={form.type} onChange={handleChange} required>
-          <option value="">Select</option>
-          {allowedTypes.map(t => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Rating (1-10)
-        <input type="number" name="rating" value={form.rating} onChange={handleChange} min="1" max="10" required />
-      </label>
-      <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Add Wine'}</button>
+      <h2 className="form-title">Log a New Wine</h2>
+      {error && <div className="error-message">{error}</div>}
+      
+      <div className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Wine Name</label>
+          <input 
+            className="form-input"
+            name="name" 
+            value={form.name} 
+            onChange={handleChange} 
+            placeholder="e.g. Château Margaux"
+            required 
+          />
+        </div>
+        
+        <div className="form-group">
+          <label className="form-label">Country</label>
+          <input 
+            className="form-input"
+            name="country" 
+            value={form.country} 
+            onChange={handleChange} 
+            placeholder="e.g. France"
+            required 
+          />
+        </div>
+        
+        <div className="form-group">
+          <label className="form-label">Year</label>
+          <input 
+            className="form-input"
+            type="number" 
+            name="year" 
+            value={form.year} 
+            onChange={handleChange} 
+            min="1900" 
+            max={new Date().getFullYear()} 
+            placeholder="e.g. 2020"
+            required 
+          />
+        </div>
+        
+        <div className="form-group">
+          <label className="form-label">Type</label>
+          <select className="form-select" name="type" value={form.type} onChange={handleChange} required>
+            <option value="">Select wine type</option>
+            {allowedTypes.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label className="form-label">Rating (1-10)</label>
+          <input 
+            className="form-input"
+            type="number" 
+            name="rating" 
+            value={form.rating} 
+            onChange={handleChange} 
+            min="1" 
+            max="10" 
+            placeholder="Rate 1-10"
+            required 
+          />
+        </div>
+      </div>
+      
+      <button className="form-button" type="submit" disabled={loading}>
+        {loading ? 'Saving...' : 'Add Wine'}
+      </button>
     </form>
   );
 };
