@@ -36,7 +36,13 @@ npm run dev
 # Backend
 cd backend
 npm install
-node src/server.js
+npm run dev
+# or
+npm run start
+
+# Direct command (equivalent to npm run start)
+node src/index.js
+```
 
 
 

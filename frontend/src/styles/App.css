@@ -75,6 +75,10 @@ body {
   flex-direction: column;
 }
 
+.form-group-full-width {
+  grid-column: 1 / -1;
+}
+
 .form-label {
   font-weight: 600;
   color: #555;
@@ -99,6 +103,18 @@ body {
   outline: none;
   border-color: #722f37;
   box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.char-counter {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: #777;
+  text-align: right;
 }
 
 .form-button {
@@ -195,6 +211,24 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.75rem;
+}
+
+.wine-notes {
+  margin-top: 0.9rem;
+  border-top: 1px solid #e6e6e6;
+  padding-top: 0.75rem;
+}
+
+.notes-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.notes-text {
+  margin-top: 0.35rem;
+  color: #555;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .rating-label {

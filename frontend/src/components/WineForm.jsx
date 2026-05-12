@@ -11,6 +11,7 @@ const WineForm = ({ onAdded }) => {
     year: '',
     type: '',
     rating: '',
+    notes: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ const WineForm = ({ onAdded }) => {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-    const { name, country, year, type, rating } = form;
+    const { name, country, year, type, rating, notes } = form;
     if (!name || !country || !year || !type || rating === '') {
       setError('All fields required');
       return;
@@ -36,8 +37,9 @@ const WineForm = ({ onAdded }) => {
         year: Number(year),
         type,
         rating: Number(rating),
+        notes,
       });
-      setForm({ name: '', country: '', year: '', type: '', rating: '' });
+      setForm({ name: '', country: '', year: '', type: '', rating: '', notes: '' });
       onAdded && onAdded(res.data);
     } catch (err) {
       setError(err.response?.data?.errors?.join(', ') || 'Failed to save');
@@ -114,6 +116,21 @@ const WineForm = ({ onAdded }) => {
             placeholder="Rate 1-10"
             required 
           />
+        </div>
+
+        <div className="form-group form-group-full-width">
+          <label className="form-label" htmlFor="notes">Notes (optional)</label>
+          <textarea
+            id="notes"
+            className="form-input form-textarea"
+            name="notes"
+            value={form.notes}
+            onChange={handleChange}
+            maxLength={500}
+            placeholder="Add tasting notes, pairing ideas, or anything memorable..."
+            rows={4}
+          />
+          <div className="char-counter">{form.notes.length}/500</div>
         </div>
       </div>
       

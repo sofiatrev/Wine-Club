@@ -15,16 +15,32 @@ app.get('/', (_req, res) => {
   res.send('Wine Club API is running \uD83C\uDF77');
 });
 
-// In‑memory store (MVP). Fields: id, name, country, year, type, rating (0-10)
+// In-memory store (MVP). Fields: id, name, country, year, type, rating (0-10), notes
 let wines = [
-  { id: 1, name: 'Chardonnay', country: 'France', year: 2021, type: 'White', rating: 8 },
-  { id: 2, name: 'Merlot', country: 'USA', year: 2019, type: 'Red', rating: 7 },
+  {
+    id: 1,
+    name: 'Chardonnay',
+    country: 'France',
+    year: 2021,
+    type: 'White',
+    rating: 8,
+    notes: 'Crisp and citrus-forward with a buttery finish.',
+  },
+  {
+    id: 2,
+    name: 'Merlot',
+    country: 'USA',
+    year: 2019,
+    type: 'Red',
+    rating: 7,
+    notes: 'Smooth tannins and dark cherry notes.',
+  },
 ];
 
 // Helper validation
 function validateWine(payload) {
   const errors = [];
-  const { name, country, year, type, rating } = payload;
+  const { name, country, year, type, rating, notes } = payload;
   const allowedTypes = ['Red', 'White', 'Rose', 'Sparkling'];
   if (!name) errors.push('name required');
   if (!country) errors.push('country required');
@@ -34,6 +50,10 @@ function validateWine(payload) {
   if (!type || !allowedTypes.includes(type)) errors.push('invalid type');
   if (rating === undefined || rating === null || Number.isNaN(Number(rating))) errors.push('rating required');
   else if (rating < 1 || rating > 10) errors.push('rating must be 1-10');
+  if (notes !== undefined && notes !== null) {
+    if (typeof notes !== 'string') errors.push('notes must be a string');
+    else if (notes.length > 500) errors.push('notes must be 500 characters or less');
+  }
   return errors;
 }
 
@@ -45,7 +65,7 @@ app.get('/wines', (_req, res) => {
 app.post('/wines', (req, res) => {
   const errors = validateWine(req.body);
   if (errors.length) return res.status(400).json({ errors });
-  const { name, country, year, type, rating } = req.body;
+  const { name, country, year, type, rating, notes } = req.body;
   const newWine = {
     id: wines.length ? wines[wines.length - 1].id + 1 : 1,
     name,
@@ -53,6 +73,7 @@ app.post('/wines', (req, res) => {
     year: Number(year),
     type,
     rating: Number(rating),
+    notes: typeof notes === 'string' ? notes.trim() : '',
   };
   wines.push(newWine);
   res.status(201).json(newWine);
@@ -75,6 +96,7 @@ app.put('/wines/:id', (req, res) => {
   wine.year = Number(update.year);
   wine.type = update.type;
   wine.rating = Number(update.rating);
+  wine.notes = typeof update.notes === 'string' ? update.notes.trim() : '';
   res.json(wine);
 });
 

@@ -53,6 +53,12 @@ const WineList = ({ refreshSignal }) => {
               <span className="rating-label">Rating:</span>
               <span className="rating-value">{w.rating}/10</span>
             </div>
+            {w.notes && (
+              <div className="wine-notes">
+                <span className="notes-label">Notes:</span>
+                <p className="notes-text">{w.notes}</p>
+              </div>
+            )}
           </div>
         ))}
       </div>
