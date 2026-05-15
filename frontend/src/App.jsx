@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
+import LoginPage from './components/LoginPage';
 import WineForm from './components/WineForm';
 import WineList from './components/WineList';
 import './styles/App.css';
 
 const App = () => {
+  const [showLogin, setShowLogin] = useState(true);
   const [refresh, setRefresh] = useState(0);
+
+  const enterApp = () => {
+    setShowLogin(false);
+  };
+
+  if (showLogin) {
+    return <LoginPage onLogin={enterApp} onSignUp={enterApp} />;
+  }
+
   return (
     <div className="app-container">
       <header className="app-header">
